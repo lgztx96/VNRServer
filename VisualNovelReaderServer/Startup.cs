@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using VisualNovelReaderServer.Data;
+using Microsoft.OpenApi.Models;
 
 namespace VisualNovelReaderServer
 {
@@ -36,11 +37,15 @@ namespace VisualNovelReaderServer
                 });
             });
 
-            services.AddControllers()
-                .AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.IgnoreNullValues = true;
-                });
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                 options.JsonSerializerOptions.IgnoreNullValues = true;
+            });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "vnr", Version = "v1" });
+            });
 
             services.AddResponseCompression();
 
@@ -55,6 +60,8 @@ namespace VisualNovelReaderServer
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "vnr-server v1"));
             }
 
             app.UseRouting();
